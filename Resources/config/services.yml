@@ -28,6 +28,8 @@ services:
             - "@serializer"
             - "%kernel.logs_dir%"
             - "%kernel.environment%"
+        tags:
+            - { name: monolog.logger, channel: main }
 
     deuzu.request_collector.collector.persister:
         class: Deuzu\RequestCollectorBundle\Collector\PersisterCollector

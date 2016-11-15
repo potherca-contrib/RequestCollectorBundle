@@ -48,6 +48,7 @@ class Configuration implements ConfigurationInterface
                                 ->children()
                                     ->booleanNode('enabled')->defaultFalse()->end()
                                     ->scalarNode('file')->defaultValue('request_collector.log')->end()
+                                    ->arrayNode('handlers')->end()
                                 ->end()
                             ->end()
                             ->arrayNode('mailer')
