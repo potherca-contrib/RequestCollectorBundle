@@ -57,7 +57,13 @@ class DispatcherCollector
     public function dispatch(RequestObject $requestObject, array $collectorParameters)
     {
         if (true === $collectorParameters['logger']['enabled']) {
-            $this->loggerCollector->collect($requestObject, ['logFile' => $collectorParameters['logger']['file']]);
+            $this->loggerCollector->collect(
+                $requestObject,
+                [
+                    'logFile' => $collectorParameters['logger']['file'],
+                    'logHandlers' => $collectorParameters['logger']['handlers']
+                ]
+            );
         }
 
         if (true === $collectorParameters['persister']['enabled']) {

@@ -18,6 +18,9 @@ class LoggerCollector implements CollectorInterface
     /** @var LoggerInterface */
     private $logger;
 
+    /** @var LoggerInterface */
+    private $deprecatedLogger;
+
     /** @var SerializerInterface */
     private $serializer;
 
@@ -28,17 +31,24 @@ class LoggerCollector implements CollectorInterface
     private $kernelEnvironment;
 
     /**
-     * @param LoggerInterface     $logger
      * @param SerializerInterface $serializer
-     * @param string              $logFolder
-     * @param string              $kernelEnvironment
+     * @param LoggerInterface     $logger
+     * @param LoggerInterface     $deprecatedLogger deprecated
+     * @param string              $logFolder deprecated
+     * @param string              $kernelEnvironment deprecated
      */
-    public function __construct(LoggerInterface $logger, SerializerInterface $serializer, $logFolder, $kernelEnvironment)
-    {
-        $this->logger = $logger;
+    public function __construct(
+        SerializerInterface $serializer,
+        LoggerInterface $logger,
+        LoggerInterface $deprecatedLogger, // deprecated
+        $logFolder, // deprecated
+        $kernelEnvironment // deprecated
+    ) {
         $this->serializer = $serializer;
-        $this->logFolder = $logFolder;
-        $this->kernelEnvironment = $kernelEnvironment;
+        $this->logger = $logger;
+        $this->deprecatedLogger = $deprecatedLogger; // deprecated
+        $this->logFolder = $logFolder; // deprecated
+        $this->kernelEnvironment = $kernelEnvironment; // deprecated
     }
 
     /**
@@ -46,14 +56,34 @@ class LoggerCollector implements CollectorInterface
      */
     public function collect(RequestObject $requestObject, array $parameters = [])
     {
-        $parameters = $this->resolveCollectorParameters($parameters);
-        $logFile = sprintf('%s/%s.%s', $this->logFolder, $this->kernelEnvironment, $parameters['logFile']);
+        if (!empty($parameters['logHandlers'])) {
+            $handlers = $this->logger->getHandlers();
 
-        $this->logger->pushHandler(new StreamHandler($logFile));
-        $this->logger->info('request_collector.collect', $this->serializer->normalize($requestObject));
+            foreach ($handlers as $handler) {
+                dump(get_class_methods($handler));die();
+                // if (in_array()) {
+                //
+                // }
+            }
+
+            $this->logger->setHandlers($parameters['logHandlers']);
+            $this->logger->info('request_collector.collect', $this->serializer->normalize($requestObject));
+            dump('fdsfs');die();
+        }
+
+        // deprecated
+        if ($parameters['logFile']) {
+            $parameters = $this->resolveCollectorParameters($parameters);
+            $logFile = sprintf('%s/%s.%s', $this->logFolder, $this->kernelEnvironment, $parameters['logFile']);
+
+            $this->deprecatedLogger->pushHandler(new StreamHandler($logFile));
+            $this->deprecatedLogger->info('request_collector.collect', $this->serializer->normalize($requestObject));
+        }
     }
 
     /**
+     * @deprecated
+     *
      * @param array $parameters
      *
      * @return array

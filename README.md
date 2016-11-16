@@ -88,14 +88,19 @@ deuzu_request_collector:
             route_path: /github/webhook
             logger:
                 enabled: true
-                file: github_collector.log # app/logs/github_collector.log
+                file: github_collector.log # deprecated in favor of handlers
+                handlers:
+                    - main
+                    - myCustomLogHandler
             mailer:
                 enabled: true
-                email: florian.touya@gmail.com
+                email: example@email.com
             persister:
                 enabled: true
 ```
 
+To log in another file configure handlers see above (myCustomHandler).
+[Check Symfony documentation]( http://symfony.com/doc/current/logging/channels_handlers.html)
 
 ## Extension
 
